@@ -38,6 +38,9 @@ io.on('connection', (socket) => {
     console.log('Message:', data.message);
     console.log('-------------------------');
 
+     // ⭐ Broadcast SOS to all connected clients
+    io.emit('sosAlert', data); // Sends to ALL clients (including dashboards)
+
     // In a real app, you would do more here, like:
     // - Save the data to a database
     // - Send an alert (SMS, email) to an administrator
