@@ -59,7 +59,7 @@ io.on('connection', (socket) => {
     geofences.forEach(geofence => {
       socket.emit('updateGeofence', geofence);
     });
-    console.log(📍 Sent ${geofences.length} existing geofences to new user:, socket.id);
+    console.log(`📍 Sent ${geofences.length} existing geofences to new user:`, socket.id);
   }
 
   // ==================== SOS EMERGENCY SYSTEM ====================
@@ -104,7 +104,7 @@ io.on('connection', (socket) => {
   // Keep original setGeofence for backward compatibility
   socket.on('setGeofence', (geofenceData) => {
     console.log('-------------------------');
-    console.log('🗺 LEGACY GEOFENCE UPDATED/SET');
+    console.log('🗺️ LEGACY GEOFENCE UPDATED/SET');
     console.log('Name:', geofenceData.name || 'Unnamed Geofence');
     console.log('Points:', geofenceData.points?.length || 0);
     console.log('-------------------------');
@@ -196,7 +196,7 @@ io.on('connection', (socket) => {
     socket.emit('geofenceCreated', { 
       success: true, 
       geofence: newGeofence,
-      message: Geofence "${newGeofence.name}" created successfully
+      message: `Geofence "${newGeofence.name}" created successfully`
     });
 
     console.log('📢 New geofence broadcasted to', connectedClients.size - 1, 'other clients');
@@ -233,7 +233,7 @@ io.on('connection', (socket) => {
 
       console.log('📢 Geofence update broadcasted to all clients');
     } else {
-      console.warn('⚠ Geofence not found for update, creating new one:', geofenceData.id);
+      console.warn('⚠️ Geofence not found for update, creating new one:', geofenceData.id);
 
       // If not found, create it as new geofence
       const newGeofence = {
@@ -278,8 +278,8 @@ io.on('connection', (socket) => {
       console.log('📢 Geofence deletion broadcasted to all clients');
       console.log('📊 Remaining geofences:', geofences.length);
     } else {
-      console.warn('⚠ Geofence not found for deletion:', data.id);
-      socket.emit('error', { message: Geofence with id ${data.id} not found });
+      console.warn('⚠️ Geofence not found for deletion:', data.id);
+      socket.emit('error', { message: `Geofence with id ${data.id} not found` });
     }
   });
 
@@ -288,7 +288,7 @@ io.on('connection', (socket) => {
   // Handle client identification (for Flutter apps, web admin, etc.)
   socket.on('identify', (data) => {
     console.log('-------------------------');
-    console.log('🏷 CLIENT IDENTIFICATION');
+    console.log('🏷️ CLIENT IDENTIFICATION');
     console.log('Type:', data.type || 'unknown');
     console.log('Name:', data.name || 'unknown');
     console.log('Platform:', data.platform || 'unknown');
@@ -316,7 +316,7 @@ io.on('connection', (socket) => {
           }, index * 100); // Small delay between each geofence
         });
 
-        console.log(📍 Queued ${geofences.length} geofences for mobile client);
+        console.log(`📍 Queued ${geofences.length} geofences for mobile client`);
 
         // Also send via bulk method
         setTimeout(() => {
@@ -333,7 +333,7 @@ io.on('connection', (socket) => {
   // Handle geofence violations from mobile clients
   socket.on('geofenceViolation', (violationData) => {
     console.log('-------------------------');
-    console.log('⚠ GEOFENCE VIOLATION DETECTED');
+    console.log('⚠️ GEOFENCE VIOLATION DETECTED');
     console.log('User:', violationData.user || 'Unknown User');
     console.log('Action:', violationData.action || 'unknown action');
     console.log('Geofence:', violationData.geofenceName || 'Unknown Geofence');
@@ -380,7 +380,7 @@ io.on('connection', (socket) => {
       }, index * 50);
     });
 
-    console.log(📍 Sent ${geofences.length} geofences to requesting client);
+    console.log(`📍 Sent ${geofences.length} geofences to requesting client`);
   });
 
   // Get recent SOS alerts
@@ -590,12 +590,12 @@ server.listen(PORT, () => {
   console.log('📍 Enhanced geofencing system active');
   console.log('🆘 SOS emergency alert system ready');
   console.log('🌐 REST API endpoints available at:');
-  console.log('   GET  /', http://localhost:${PORT}/);
-  console.log('   GET  /api/health', http://localhost:${PORT}/api/health);
-  console.log('   GET  /api/stats', http://localhost:${PORT}/api/stats);
-  console.log('   GET  /api/geofences', http://localhost:${PORT}/api/geofences);
-  console.log('   POST /api/geofences', http://localhost:${PORT}/api/geofences);
-  console.log('   GET  /api/alerts', http://localhost:${PORT}/api/alerts);
+  console.log('   GET  /', `http://localhost:${PORT}/`);
+  console.log('   GET  /api/health', `http://localhost:${PORT}/api/health`);
+  console.log('   GET  /api/stats', `http://localhost:${PORT}/api/stats`);
+  console.log('   GET  /api/geofences', `http://localhost:${PORT}/api/geofences`);
+  console.log('   POST /api/geofences', `http://localhost:${PORT}/api/geofences`);
+  console.log('   GET  /api/alerts', `http://localhost:${PORT}/api/alerts`);
   console.log('🚀================================================================🚀');
   console.log('🎯 Waiting for client connections...');
   console.log('');
@@ -665,7 +665,7 @@ const gracefulShutdown = (signal) => {
 
   // Force close after 5 seconds
   setTimeout(() => {
-    console.log('⚠ Force closing server...');
+    console.log('⚠️ Force closing server...');
     process.exit(1);
   }, 5000);
 };
