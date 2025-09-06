@@ -8,8 +8,6 @@ const app = express();
 const server = http.createServer(app);
 
 // 3. Initialize Socket.IO
-// CORS (Cross-Origin Resource Sharing) is configured to allow all connections.
-// This is okay for development but should be more restrictive in production.
 const io = new Server(server, {
   cors: {
     origin: "*", // Allow connections from any origin
@@ -18,33 +16,43 @@ const io = new Server(server, {
 });
 
 // 4. Define the Port
-// This will use the port provided by a hosting service (like Render)
-// or default to port 3000 for local testing.
 const PORT = process.env.PORT || 3000;
+
+// ✨ NEW: In-memory storage for the current geofence
+let currentGeofence = null;
 
 // 5. Define what happens when a client connects
 io.on('connection', (socket) => {
   console.log('✅ A user connected. Socket ID:', socket.id);
 
+  // ✨ NEW: Immediately send the current geofence to the newly connected client
+  if (currentGeofence) {
+    socket.emit('updateGeofence', currentGeofence);
+    console.log('Sent existing geofence to new user', socket.id);
+  }
+
   // Listen for the "sos" event from a connected client
   socket.on('sos', (data) => {
-    // When an "sos" message is received, log its contents to the console.
     console.log('-------------------------');
     console.log('🆘 SOS Received!');
-    console.log('User:', data.user);
-    console.log('Latitude:', data.lat);
-    console.log('Longitude:', data.lon);
-    console.log('Timestamp:', data.timestamp);
-    console.log('Message:', data.message);
+    console.log('User:', data.user, 'at', data.lat, data.lon);
     console.log('-------------------------');
 
-     // ⭐ Broadcast SOS to all connected clients
-    io.emit('sosAlert', data); // Sends to ALL clients (including dashboards)
+    // Broadcast SOS to all connected clients (including dashboards)
+    io.emit('sosAlert', data);
+  });
 
-    // In a real app, you would do more here, like:
-    // - Save the data to a database
-    // - Send an alert (SMS, email) to an administrator
-    // - Broadcast this alert to an admin dashboard
+  // ✨ NEW: Listen for geofence updates from an admin client
+  socket.on('setGeofence', (geofenceData) => {
+    currentGeofence = geofenceData;
+    console.log('-------------------------');
+    console.log('🗺️ Geofence Updated/Set');
+    console.log('Name:', currentGeofence.name);
+    console.log('Points:', currentGeofence.points.length);
+    console.log('-------------------------');
+    
+    // Broadcast the new geofence to ALL connected clients
+    io.emit('updateGeofence', currentGeofence);
   });
 
   // Handle disconnection
